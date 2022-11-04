@@ -1,13 +1,15 @@
 "use strict";
 
 const URL = "covid-193.p.rapidapi.com";
-const countriesNotAllowed = ["Africa", "South-America", "North-America", "All", "Oceania", "Europe", "Asia"];
+
 
 const _app = Vue.createApp({
 	data() {
 		return {
-			totalDeaths: [],
-			allCountries: []
+			countryDeaths: [],
+			countries: [],
+			continentDeaths: [],
+			continents: ["Africa", "South-America", "North-America", "All", "Oceania", "Europe", "Asia"]
 		}
 	},
 	methods: {
@@ -28,48 +30,43 @@ const _app = Vue.createApp({
 			.then(res => res.json())
 			.then(res => res.response);
 		},
-		async groupInformation(){
+		async fetchDataForBarChart(){
 			let information = await this.getInformation();
 
 			information = information.filter(index => {
-				return !countriesNotAllowed.includes(index.country);
+				return !this.continents.includes(index.country);
 			});
 
-			this.totalDeaths = [];
-			this.allCountries = [];
+			this.countryDeaths = [];
+			this.countries = [];
 
 			information.filter(index => {
 				
 				if (index.deaths.total !== null && index.country !== null){
-					this.totalDeaths.push(index.deaths.total);
-					this.allCountries.push(index.country);
+					this.countryDeaths.push(index.deaths.total);
+					this.countries.push(index.country);
 				}
 			});
 
-			console.log(JSON.parse(JSON.stringify(this.totalDeaths)));
-			console.log(JSON.parse(JSON.stringify(this.allCountries)));
 			document.querySelector("button").disabled = true;
-			this.displayChart();
+			this.displayBarChart();
 		},
-		displayChart(){
+		displayBarChart(){
 			const ctx = document.querySelector("#covidChart").getContext('2d');
-			new Chart(ctx, this.getDataForChart());
+			new Chart(ctx, this.dataForBarChart());
 		},
 
-		getDataForChart(){
+		dataForBarChart(){
 				return {
 				type: 'bar',
 				data: {
-					labels: JSON.parse(JSON.stringify(this.allCountries)),
+					labels: JSON.parse(JSON.stringify(this.countries)),
 					datasets: [{
 						label: '# of deaths',
-						data: JSON.parse(JSON.stringify(this.totalDeaths)),
+						data: JSON.parse(JSON.stringify(this.countryDeaths)),
 						borderWidth: 1
 					}]
 				},
-				backgroundColor: [
-					"rgb(255, 255, 255)"
-				],
 				layout: {
 					padding: {
 						left: 20
@@ -83,6 +80,53 @@ const _app = Vue.createApp({
 						},
 					},	
 				}
+			}
+		},
+
+		async fetchDataForPieChart(){
+			let information = await this.getInformation();
+			
+			information = information.filter(index => {
+				if (index.country === "All") return;
+				return this.continents.includes(index.country);
+			});
+
+			this.continentDeaths = [];
+			this.continents = [];
+
+			information.filter(index => {
+				if (index.deaths.total !== null && index.country !== null){
+					this.continentDeaths.push(index.deaths.total);
+					this.continents.push(index.country);
+				}
+			});
+
+			console.log(JSON.parse(JSON.stringify(this.continentDeaths)));
+			console.log(JSON.parse(JSON.stringify(this.continents)));
+			this.displayPieChart();
+		},
+
+		displayPieChart(){
+			const ctx = document.querySelector("#continentPieChart").getContext('2d');
+			new Chart(ctx, this.dataForPieChart());
+		},
+		
+		dataForPieChart(){
+			return {
+				type: 'pie',
+				data: {
+					labels: JSON.parse(JSON.stringify(this.continents)),
+					datasets: [{
+						label: '# of deaths',
+						data: JSON.parse(JSON.stringify(this.continentDeaths)),
+						borderWidth: 1
+					}]
+				},
+				layout: {
+					padding: {
+						left: 20
+					}
+				},
 			}
 		}
 	},

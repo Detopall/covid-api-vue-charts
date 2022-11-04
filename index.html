@@ -20,10 +20,11 @@
 		<form>
 			<label for="key"> Enter your valid Rapid Api key </label>
 			<input type="text" id="key" ref="apiKey" required>
-			<button type="button" @click="groupInformation"> Load Information </button>
+			<button type="button" @click="fetchDataForBarChart(); fetchDataForPieChart();"> Load Information </button>
 		</form>
 		
 		<canvas id="covidChart"></canvas>
+		<canvas id="continentPieChart"></canvas>
 		
 	</main>
 	
