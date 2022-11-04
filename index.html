@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title> API - Vue - Charts </title>
+	<link rel="stylesheet" href="assets/css/screen.css">
+
+	<script defer src="https://unpkg.com/vue@next"></script>
+
+	<script defer src="assets/js/script.js"></script>
+
+</head>
+<body>
+	<header> Statistics of Covid Cases </header>
+
+	<main id="app">
+		<form>
+			<label for="key"> Enter your valid Rapid Api key </label>
+			<input type="text" id="key" ref="apiKey" required>
+		</form>
+		<button type="button" @click="groupInformation"> Load Information </button>
+	</main>
+	
+</body>
+</html>

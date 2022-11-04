@@ -1,0 +1,25 @@
+body {
+	display: block;
+	text-align: center;
+	background-color: darkcyan;
+	font-size: 1rem;
+	font-weight: bold;
+	font-family: Verdana, "Comic Sans MC", sans-serif;
+}
+
+header {
+	font-size: 2rem;
+	margin: 2rem 0 2rem 0;
+	text-decoration: underline;
+}
+
+form {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-flow: column;
+}
+
+form label, form input {
+	margin-bottom: 1rem;
+}
