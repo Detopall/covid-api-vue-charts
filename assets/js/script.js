@@ -1,6 +1,7 @@
 "use strict";
 
 const URL = "covid-193.p.rapidapi.com";
+const countriesNotAllowed = ["Africa", "South-America", "North-America", "All", "Oceania", "Europe", "Asia"];
 
 const _app = Vue.createApp({
 	data() {
@@ -28,9 +29,17 @@ const _app = Vue.createApp({
 			.then(res => res.response);
 		},
 		async groupInformation(){
-			const information = await this.getInformation();
+			let information = await this.getInformation();
+
+			information = information.filter(index => {
+				return !countriesNotAllowed.includes(index.country);
+			});
+
+			this.totalDeaths = [];
+			this.allCountries = [];
 
 			information.filter(index => {
+				
 				if (index.deaths.total !== null && index.country !== null){
 					this.totalDeaths.push(index.deaths.total);
 					this.allCountries.push(index.country);
@@ -39,23 +48,45 @@ const _app = Vue.createApp({
 
 			console.log(JSON.parse(JSON.stringify(this.totalDeaths)));
 			console.log(JSON.parse(JSON.stringify(this.allCountries)));
+			document.querySelector("button").disabled = true;
+			this.displayChart();
+		},
+		displayChart(){
+			const ctx = document.querySelector("#covidChart").getContext('2d');
+			new Chart(ctx, this.getDataForChart());
+		},
 
+		getDataForChart(){
+				return {
+				type: 'bar',
+				data: {
+					labels: JSON.parse(JSON.stringify(this.allCountries)),
+					datasets: [{
+						label: '# of deaths',
+						data: JSON.parse(JSON.stringify(this.totalDeaths)),
+						borderWidth: 1
+					}]
+				},
+				backgroundColor: [
+					"rgb(255, 255, 255)"
+				],
+				layout: {
+					padding: {
+						left: 20
+					}
+				},
+				options: {
+					maintainAspectRatio: true,
+					scales: {
+						y: {
+							beginAtZero: true,
+						},
+					},	
+				}
+			}
 		}
 	},
 });
 
-/*
-information.forEach(index => {
-				this.totalDeaths.push(index.deaths.total);
-			});
-
-information.forEach(index => {
-	this.allCountries.push(index.country);
-});
-
-
-JSON.parse(JSON.stringify(this.totalDeaths));
-JSON.parse(JSON.stringify(this.allCountries));
-*/
 
 _app.mount("#app");
